@@ -19,72 +19,41 @@ The steps I'll be describing are as follows:
 * exploratory.py contains parameters and methods to plot test images and transformations.
 * pipeline.py contains the video processing pipeline and `process_frame(image)` function which is used on each frame.  
 
+### Pipeline
+**Original images**
+The test images and frames from the video have the shape (124,23,3), meaning a height of a, a width of x, and 3 RGB channels.
 
+**Gaussian blur**
+As the first step, I decided to apply a Gaussian blur to the images. This is important because we only want real edges from lane lines to stand out, and want to ignore the noise. Using the `cv2.GaussianBlur(img, (kernel_size, kernel_size)` function, I experimented with different kernels and found that a symmetric kernel of size (3,3) worked well. 
 
-### Creating a thresholded binary image
-I did exploratory analysis to compare the effectiveness of various techniques. For each technique, I tried various kernels and thresholds. They included:
-* absolute sobel threshold (in X and Y directions)
-* magnitude sobel threshold
-* directional threshold
-* RGB thresholds
-* HLS (hue/lightness/saturation) thresholds
+**Grayscale conversion**
+After applying the blur and before finding edges, I applied a grayscale filter because I want the edge detection algorithm to work independent of color. To do this I used the `cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)` function. 
 
-Ultimately, I found that using a combination of the the HLS threshold and magnitude threshold works the best.
+**Edge detection**
+There are many ways to detect edges on an image but one of the most popular is the Canny Edge algorithm. The multi-stage algorithm first computes gradient intensity represenations of the the input image, applies thresholding using a lower and upper boundary on gradient values, and then tracks edges using hysteresis (suppressing weak edges that aren't connected to strong edges). I implemented it using  `cv2.Canny(img, low_threshold, high_threshold)`. The parameters I found to work best were 50 for the lower bound and 300 for the upper bound.
 
-After applying these filters, I also utilized a filter/window to remove the area of the image where lane lines wouldn't be. 
-
-![alt text][image4]
-![alt text][image5]
-
-### Perspective transform
-
-The perspective transform changes the image such that you get a bird's eye view. This is important in order to determine lane curvature. 
-
-The method for my perspective transform is called `transform(proc)`. The transformation is done by specifying "source points" and "destination points". Each set of points has 4 unique points and the transformation effectively specified how this 4-sided figure should look in the new space. The source points were manually chosen to be the trapezoid that makes up the main lane area. The destination points were also manually chosen to be a rectangle. My points were the following: 
+**Window**
+The entire image doesn't contain useful information. For instance, the top of the image mostly consists of the sky. Because of that, I applied a region of interest mask to the output of the edge detector that only keeps the area of the image we care about. I used the `cv2.fillPoly(mask, vertices, ignore_mask_color)` function to make the non-important area of the image black. The shape of this mask is a symmetric trapezoid that roughly follows the shape of the lane. It's defined as follows: 
 
 ```python
-src = np.float32([(257, 685), (1050, 685), (583, 460),(702, 460)])
-dst = np.float32([(200, 720), (1080, 720), (200, 0), (1080, 0)])
+vertices = np.array([[(100,height), (int(width/2) - 80, 325), (int(width/2) + 80, 325), (width - 100,height)]])
 ```
-I then verified that the perspective transformation was working by drawing the source and destination points on a test image and its warped transformation, and ensuring the lines were parallel (left and right lane lines should always be parallel). 
 
-![alt text][image6]
-![alt text][image7]
-
-### Identifying lane line pixels and fitting a polynomial
-
-I started by creating a historgram for the buttom half of the transformed image and found the midpoint of the lane by taking the average of the two peaks. 
-
-Then I utilized a sliding window approach to determine the location of the lanes as you go further away form the car. 
-
-Once I had the windows and lane centers, I use the `np.polyfit` function to draw two second-order polynomials on the image to indicate the lane lines. 
-
-![alt text][image8]
-![alt text][image9]
-
-
-### Radius of curvature and lane position relative to car 
-
-The radius of curvature is the radius of a circle that touches a curve at a given point and has the same tangent and curvature at that point. I used standard formulas to calculate the radius on both the left and right lane lines. 
-
-To calculate the lane position relative to the car I compared the center of the image (center of the car) to the midpoint between the left lane and right lane intersections with the bottom of the image. 
+**Hough lines and lane annotation**
 
 
 
-### Final image after undoing the transformation 
 
-To undue the transform I used the `warpPerspective` function again but used the source and image points parameters in reverse order. After that I used the `fillPoly` function to color the are in between the lane lines in green. 
 
-![alt text][image10]
 
-### Video pipeline
-I created a separate file to process the video, called `process_video.py`. Here I used the moviepy library to read the video, edit it using the process function I defined, and save it. 
-The output video file is called `video_annotated.mp4`.
 
-### Discussion
-The video pipeleine did a robust job of detecting lane lines, but it didn't perform too great on the challenge project.
 
-In order to make the pipeline even more robust, I need to:
-* Explore more ways to process images and apply better filters. There are so many combinations of color spaces and methods to find edges, that there are definitely ones out there which perform better.
-* Test the pipelines on more videos to see if it performs well in fog, rain, snow etc.
+
+
+
+
+
+
+
+
 
