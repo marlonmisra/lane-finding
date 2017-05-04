@@ -38,14 +38,13 @@ def plot_all(images):
 	fig.tight_layout()
 
 	for ax, image, label in zip(axes, images[:4], labels[:4]):
-		ax.imshow(image)
+		ax.imshow(image, cmap='gray')
 		ax.set_title(label)
 		ax.axis('off')
 	#plt.show()
-	plt.title("Original images")
-	plt.savefig('image.png', bbox_inches='tight')
+	plt.savefig('image.png', bbox_inches='tight', cmap='gray')
 
-plot_all(images)
+plot_all(annotated_images_2)
 
 #PLOT TRANSFORMATIONS
 def plot_progress(progress, test_image_number):
