@@ -39,7 +39,20 @@ The entire image doesn't contain useful information. For instance, the top of th
 vertices = np.array([[(100,height), (int(width/2) - 80, 325), (int(width/2) + 80, 325), (width - 100,height)]])
 ```
 
-**Hough lines and lane annotation**
+**Hough lines**
+The Hough transform is a feature extraction technique that lets you find line segments on an image. It works by converting between Cartesian coordinates (X, Y) to Hough space (slope/m, intercept/b), and looking at points where intersections occur in Hough space to determine whether a straight line exists in Cartesian space. The reason this works is because every point in the Cartesian space is a line in Hough space (every point can be represented by an infinite number of m-b combinations). When multiple points in the Cartesian space form a straight line, the equivalent lines in Hough space necessarily intersect at the m-b location where the line is (in Cartesian space) because the intersection uniquely defines the line.
+
+To get the line segments I used the function `cv2.HoughLinesP(img, rho, theta, threshold, np.array([]), minLineLength=min_line_len, maxLineGap=max_line_gap)`. The parameters that I found worked best are threshold = 23, min_line_length = 5, and max_line_gap = 3. I then looped through the line segments and drew them on an empty image as follows.
+
+```python
+for line in lines:
+        for x1,y1,x2,y2 in line:
+            cv2.line(line_img, (x1, y1), (x2, y2), color = [255,0,0], thickness=10)
+```
+
+
+**Hough lines (Advanced)**
+
 
 
 
