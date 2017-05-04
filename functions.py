@@ -50,68 +50,54 @@ def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap):
 
     for line in lines:
         for x1,y1,x2,y2 in line:
-            cv2.line(line_img, (x1, y1), (x2, y2), color = [255,0,0], thickness=3)
+            cv2.line(line_img, (x1, y1), (x2, y2), color = [255,0,0], thickness=10)
 
     return line_img
 
-def hough_lines_advanced(img, rho, theta, threshold, min_line_len, max_line_gap):
+def extrapolate(x1, y1, m, y2):
+    x2 = int(((y2-y1)/m)+x1)
+    return x2
+
+def hough_lines_advanced(img, rho, theta, threshold, min_line_len, max_line_gap, max_dist):
     line_img = np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8)
     lines = cv2.HoughLinesP(img, rho, theta, threshold, np.array([]), minLineLength=min_line_len, maxLineGap=max_line_gap)
     
-    left_lines = []
+    left_line_points = []
     left_slopes = []
-    right_lines = []
+
+    right_line_points = []
     right_slopes = []
 
     for line in lines:
         for x1,y1,x2,y2 in line:
-            slope = (y2-y1)/(x2-x1)
+            slope = 1.0*(y2-y1)/(x2-x1)
             if slope <= 0:
-                left_lines.append(line)
+                left_line_points.append([x1, y1])
+                left_line_points.append([x2, y2])
                 left_slopes.append(slope)
 
             elif slope > 0:
-                right_lines.append(line)
+                right_line_points.append([x1, y1])
+                right_line_points.append([x2, y2])
                 right_slopes.append(slope)
 
-    avg_left_slope = sum(left_slopes) / float(len(left_slopes))
-    avg_right_slope = sum(right_slopes) / float(len(right_slopes))
+    #left
+    point = np.mean(left_line_points, axis = 0)
+    avg_left_slope = np.mean(left_slopes)
+    left_xmin = extrapolate(x1 = point[0], y1 = point[1], m = avg_left_slope, y2 = img.shape[0])
+    left_xmax = extrapolate(x1 = point[0], y1 = point[1], m = avg_left_slope, y2 = max_dist)
+    cv2.line(line_img, (left_xmin, img.shape[0]), (left_xmax, max_dist), color = [255, 0, 0], thickness = 10)
 
-    x1_min = 1000
-    x2_max = 0
-    x1_max = 0
-    x2_min = 1000
+    #right
+    point_2 = np.mean(right_line_points, axis = 0)
+    avg_right_slope = np.mean(right_slopes)
+    right_xmax = extrapolate(x1 = point_2[0], y1 = point_2[1], m = avg_right_slope, y2 = img.shape[0])
+    right_xmin = extrapolate(x1 = point_2[0], y1 = point_2[1], m = avg_right_slope, y2 = max_dist)
+    cv2.line(line_img, (right_xmax, img.shape[0]), (right_xmin, max_dist), color = [0, 255, 0], thickness = 10)
 
-    for line in left_lines:
-        for x1,y1,x2,y2 in line:
-            if x1 < x1_min:
-                x1_min = x1
-            if x2 < x1_min:
-                x1_min = x1
-            if x2 > x2_max:
-                x2_max = x2
-
-    for line in right_lines:
-        for x1,y1,x2,y2 in line:
-            if x1 > x1_max:
-                x1_max = x1
-            if x2 < x2_min:
-                x2_min = x2
-
-    cv2.line(line_img, (x1_min, 500), (x2_max, 320), color = [255, 0, 0], thickness = 10)
-    cv2.line(line_img, (x1_max, 500), (x2_min, 320), color = [0, 255, 0], thickness = 10)
-    
     return line_img
 
-    '''
-    #plot left and right lines in different colors
-    for line in left_lines:
-        for x1,y1,x2,y2 in line:
-            cv2.line(line_img, (x1, y1), (x2, y2), color = [255,0,0], thickness=3)
-    for line in right_lines:
-        for x1,y1,x2,y2 in line:
-            cv2.line(line_img, (x1, y1), (x2, y2), color = [0,255,0], thickness=3)
-    '''
+
 
 
 
