@@ -11,6 +11,9 @@ The steps I'll be describing are as follows:
 * Taking individual lane segments, dividing them into left/right lane buckets based on slope, and extrpolating the full lane lines.
 * Annotating the original image with predicated lane lines. 
 
+[//]: # (Image References)
+
+[image1]: ./readme_images/original_images.png "Original imagse"
 
 ### Files and project navigation 
 * test_images and test_videos contain testing data.
@@ -22,6 +25,8 @@ The steps I'll be describing are as follows:
 ### Pipeline
 **Original images**
 The test images and frames from the video have the shape (124,23,3), meaning a height of a, a width of x, and 3 RGB channels.
+
+![alt text][image1]
 
 **Gaussian blur**
 As the first step, I decided to apply a Gaussian blur to the images. This is important because we only want real edges from lane lines to stand out, and want to ignore the noise. Using the `cv2.GaussianBlur(img, (kernel_size, kernel_size)` function, I experimented with different kernels and found that a symmetric kernel of size (3,3) worked well. 
@@ -75,13 +80,53 @@ left_line_points = []
                 right_slopes.append(slope)
 ```
 
+From there, I performed the following steps for each lane. First, I picked the mean point from the collections of points I have. Then I calculated the average slope to minimize the effects of outliers. Then I calculated the X coordinates of the out point at the bottom and top. In order to do that, I made use of the coordiantes of the mean point, the slope, and the Y coordinates. For that I used an extrapolate function. Finally I drew the lanes.
 
-From there, 
+```python
+def extrapolate(x1, y1, m, y2):
+    x2 = int(((y2-y1)/m)+x1)
+    return x2
+```
 
+```python
+#left
+    point = np.mean(left_line_points, axis = 0)
+    avg_left_slope = np.mean(left_slopes)
+    left_xmin = extrapolate(x1 = point[0], y1 = point[1], m = avg_left_slope, y2 = img.shape[0])
+    left_xmax = extrapolate(x1 = point[0], y1 = point[1], m = avg_left_slope, y2 = max_dist)
+    cv2.line(line_img, (left_xmin, img.shape[0]), (left_xmax, max_dist), color = [255, 0, 0], thickness = 10)
 
+    #right
+    point_2 = np.mean(right_line_points, axis = 0)
+    avg_right_slope = np.mean(right_slopes)
+    right_xmax = extrapolate(x1 = point_2[0], y1 = point_2[1], m = avg_right_slope, y2 = img.shape[0])
+    right_xmin = extrapolate(x1 = point_2[0], y1 = point_2[1], m = avg_right_slope, y2 = max_dist)
+    cv2.line(line_img, (right_xmax, img.shape[0]), (right_xmin, max_dist), color = [0, 255, 0], thickness = 10)
 
+    return line_img
+```
 
+**Annotated lane lines**
+For the final step, I defined a function that annotates the predicted lane lines on the original image. 
 
+```python
+def weighted_img(img, initial_img, a=0.8, b=1., c=0.):
+	#img is output of hough lines
+	#initial_img  is img before any processing
+ 
+    return cv2.addWeighted(initial_img, a, img, b, c)
+```
+
+### Video pipeline
+In `pipeline.py`, there are two functions defined. The first, `process_frame(image)` applies all the transformation described above in sequence and can be applied on a single frame. The second function, `process_video(input_path, output_path)`, makes use of video libraries to read videos frame by frame, apply the processing function to each one, and save a video of the output file. 
+
+### Discussion
+This project was fairly simple and the pipelines only works in ideal conditions. Improvements that can be made include:
+* Making use of different color spaces (HLS, HUV, etc.) to better detect lanes
+* Being able to determine the curvature of the lanes if they are not straight.
+* Doing distortion correction on the original images to reverse the impact of different lenses. 
+* Removing line segments which have slopes that don't make sense.
+* Detecting parallel lines.
 
 
 

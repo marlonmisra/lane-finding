@@ -33,17 +33,19 @@ progress = [images, blurred_images, gray_images, canny_images, masked_images, ho
 #PLOT ALL IMAGES FOR ONE TRANSFORMATION
 def plot_all(images):
 	labels = ['Straight white', 'Curved white', 'White and yellow', 'White and yellow 2', 'White and yellow 3', 'White and yellow 4']
-	fig, axes = plt.subplots(nrows=2, ncols=3, figsize = (15,8))
+	fig, axes = plt.subplots(nrows=2, ncols=2, figsize = (10,6))
 	axes = axes.ravel()
 	fig.tight_layout()
 
-	for ax, image, label in zip(axes, images, labels):
+	for ax, image, label in zip(axes, images[:4], labels[:4]):
 		ax.imshow(image)
 		ax.set_title(label)
 		ax.axis('off')
-	plt.show()
+	#plt.show()
+	plt.title("Original images")
+	plt.savefig('image.png', bbox_inches='tight')
 
-#plot_all(hough_images)
+plot_all(images)
 
 #PLOT TRANSFORMATIONS
 def plot_progress(progress, test_image_number):
@@ -58,7 +60,7 @@ def plot_progress(progress, test_image_number):
 		#ax.axis('off')
 	plt.show()
 
-plot_progress(progress, test_image_number = 2)
+#plot_progress(progress, test_image_number = 2)
 
 
 
