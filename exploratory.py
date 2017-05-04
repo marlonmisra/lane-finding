@@ -43,7 +43,7 @@ def plot_all(images):
 		ax.axis('off')
 	plt.show()
 
-#plot_all(annotated_images_2)
+#plot_all(hough_images)
 
 #PLOT TRANSFORMATIONS
 def plot_progress(progress, test_image_number):
@@ -58,7 +58,7 @@ def plot_progress(progress, test_image_number):
 		#ax.axis('off')
 	plt.show()
 
-plot_progress(progress, test_image_number = 1)
+plot_progress(progress, test_image_number = 2)
 
 
 

@@ -71,7 +71,7 @@ def hough_lines_advanced(img, rho, theta, threshold, min_line_len, max_line_gap,
     for line in lines:
         for x1,y1,x2,y2 in line:
             slope = 1.0*(y2-y1)/(x2-x1)
-            if slope <= 0:
+            if slope <= 0 and slope > -0.74:
                 left_line_points.append([x1, y1])
                 left_line_points.append([x2, y2])
                 left_slopes.append(slope)
