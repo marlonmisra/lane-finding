@@ -35,6 +35,7 @@ The steps I'll be describing are:
 
 ### Pipeline
 **Original images**
+
 The test images and frames from the video have the shape (124,23,3), meaning a height of a, a width of x, and 3 RGB channels.
 
 ![alt text][image2]
