@@ -41,10 +41,10 @@ def plot_all(images):
 		ax.imshow(image, cmap='gray')
 		ax.set_title(label)
 		ax.axis('off')
-	#plt.show()
-	plt.savefig('image.png', bbox_inches='tight', cmap='gray')
+	plt.show()
+	#plt.savefig('image.png', bbox_inches='tight', cmap='gray')
 
-plot_all(annotated_images_2)
+#plot_all(annotated_images_2)
 
 #PLOT TRANSFORMATIONS
 def plot_progress(progress, test_image_number):
@@ -56,10 +56,12 @@ def plot_progress(progress, test_image_number):
 	for ax, transformation, label in zip(axes, progress, labels):
 		ax.imshow(transformation[test_image_number], cmap='gray')
 		ax.set_title(label)
-		#ax.axis('off')
-	plt.show()
+		ax.axis('off')
+	#plt.show()
+	plt.savefig('image.png', bbox_inches='tight', cmap='gray')
 
-#plot_progress(progress, test_image_number = 2)
+
+plot_progress(progress, test_image_number = 0)
 
 
 
