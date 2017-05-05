@@ -41,17 +41,20 @@ The test images and frames from the video have the shape (124,23,3), meaning a h
 ![alt text][image2]
 
 **Gaussian blur and grayscale transform**
+
 As the first step, I applied a Gaussian blur to the images. This is important because we only want real edges from lane lines to stand out, and want to ignore the noise. Using the `cv2.GaussianBlur(img, (kernel_size, kernel_size)` function, I experimented with different kernels and found that a symmetric kernel of size (3,3) worked well. After that, I applied a grayscale filter using the `cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)` function. 
 
 
 ![alt text][image3]
 
 **Edge detection**
+
 There are many ways to detect edges on an image but one of the most popular is the Canny Edge algorithm. The multi-stage algorithm first computes gradient intensity represenations of the the input image, applies thresholding using a lower and upper boundary on gradient values, and then tracks edges using hysteresis (suppressing weak edges that aren't connected to strong edges). I implemented it using  `cv2.Canny(img, low_threshold, high_threshold)`. The parameters I found to work best were 50 for the lower bound and 300 for the upper bound.
 
 ![alt text][image4]
 
 **Window**
+
 The entire image doesn't contain useful information. For instance, the top of the image mostly consists of the sky. Because of that, I applied a region of interest mask to the output of the edge detector that only keeps the area of the image we care about. I used the `cv2.fillPoly(mask, vertices, ignore_mask_color)` function to make the non-important area of the image black. The shape of this mask is a symmetric trapezoid that roughly follows the shape of the lane. It's defined as follows: 
 
 ```python
@@ -61,6 +64,7 @@ vertices = np.array([[(100,height), (int(width/2) - 80, 325), (int(width/2) + 80
 ![alt text][image5]
 
 **Hough lines**
+
 The Hough transform is a feature extraction technique that lets you find line segments on an image. It works by first converting Cartesian coordinates (X, Y) to a paremetric space (slope, intercept). In this space every line represents a point in XY space. Now, if many points form a line in XY space, all these points are lines in "Hough space", and the point at which they intersect represents the slope and intercept that form the line.
 
 To get the line segments I used the function `cv2.HoughLinesP(img, rho, theta, threshold, np.array([]), minLineLength=min_line_len, maxLineGap=max_line_gap)`. The parameters that I found worked best are threshold = 23, min_line_length = 5, and max_line_gap = 3. I then looped through the line segments and drew them on an empty image as follows.
@@ -74,6 +78,7 @@ for line in lines:
 ![alt text][image6]
 
 **Hough lines (Advanced)**
+
 Our goal was not only to detect and annotate lane segments, but rather to predict the location of the full lanes. To do this, I first looped through the line segments and put each point of the line segments into a left lane or right lane bucket, depending on the slope of the line segment. In addition, I also moved the slopes themselves into left slope and right slope buckets. 
 
 To find the coordinates of the two points that make up the lane, I performed these steps for each lane. First, I found the mean point and mean slope from the colleciton of points and slopes I calculated. Then I used the X-Y coordinates of the mean point, the mean slope, and a Y coordinate (either the bottom of the image for the bottom of the lane or the value of the parameter max_dist which represents how far the lanes go), to extrapolate the two X-coordinates of the two points I need. 
@@ -128,6 +133,7 @@ return line_img
 ![alt text][image7]
 
 **Annotated lane lines**
+
 For the final step, I defined a function that annotates the predicted lane lines on the original image. 
 
 ```python
