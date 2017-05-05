@@ -28,7 +28,11 @@ def process_frame(image):
 	annotated_image = weighted_img(image, hough_image)
 	hough_image_advanced = hough_lines_advanced(masked_image, rho = rho, theta = theta, threshold = threshold, min_line_len = min_line_length, max_line_gap = max_line_gap, max_dist = hough_max_dist)
 	annotated_image_2 = weighted_img(image, hough_image_advanced)
+	#plt.imshow(annotated_image_2)
+	#plt.savefig('test_image_6_annotated')
 	return annotated_image_2
+
+#process_frame(images[5])
 
 
 def process_video(input_path, output_path):
@@ -36,4 +40,4 @@ def process_video(input_path, output_path):
 	output_clip = input_file.fl_image(process_frame)
 	output_clip.write_videofile(output_path, audio=False)
 
-process_video('test_videos/test_video_1.mp4', 'test_videos_results/test_video_1_annotated.mp4')
+#process_video('test_videos/test_video_1.mp4', 'test_videos_results/test_video_1_annotated.mp4')
