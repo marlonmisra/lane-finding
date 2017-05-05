@@ -57,11 +57,11 @@ def plot_progress(progress, test_image_number):
 		ax.imshow(transformation[test_image_number], cmap='gray')
 		ax.set_title(label)
 		ax.axis('off')
-	#plt.show()
-	plt.savefig('image.png', bbox_inches='tight', cmap='gray')
+	plt.show()
+	#plt.savefig('image.png', bbox_inches='tight', cmap='gray')
 
 
-plot_progress(progress, test_image_number = 0)
+#plot_progress(progress, test_image_number = 0)
 
 
 

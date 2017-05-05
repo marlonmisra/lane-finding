@@ -81,7 +81,7 @@ for line in lines:
 
 Our goal was not only to detect and annotate lane segments, but rather to predict the location of the full lanes. To do this, I first looped through the line segments and put each point of the line segments into a left lane or right lane bucket, depending on the slope of the line segment. In addition, I also moved the slopes themselves into left slope and right slope buckets. 
 
-To find the coordinates of the two points that make up the lane, I performed these steps for each lane. First, I found the mean point and mean slope from the colleciton of points and slopes I calculated. Then I used the X-Y coordinates of the mean point, the mean slope, and a Y coordinate (either the bottom of the image for the bottom of the lane or the value of the parameter max_dist which represents how far the lanes go), to extrapolate the two X-coordinates of the two points I need. 
+To find the coordinates of the two points that make up the lane, I performed these steps for each lane. First, I found the mean point and mean slope from the collection of points and slopes I calculated. Then I used the X-Y coordinates of the mean point, the mean slope, and a Y coordinate (either the bottom of the image for the bottom of the lane or the value of the parameter max_dist which represents how far the lanes go), to extrapolate the two X-coordinates of the two points I need. 
 
 
 ```python
@@ -155,7 +155,7 @@ In `pipeline.py`, there are two functions defined. The first, `process_frame(ima
 The pipeline I built is relatively robust in normal conditions. But in conditions where it's dark, there is rain or snow, or the lanes are curved, the pipeline doesn't perform well. 
 
 Improvements that can be made include:
-* Making use of different color spaces (HLS, HUV, etc.) to better detect lanes
+* Making use of different color spaces (HLS, HUV, etc.) to better detect lanes.
 * Being able to determine the curvature of the lanes if they are not straight.
 * Doing distortion correction on the original images to reverse the impact of different lenses. 
 * Removing line segments which have abnormal slopes. 
