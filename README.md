@@ -21,7 +21,7 @@ The steps I'll be describing are as follows:
 [image6]: ./readme_assets/hough_advanced_images.png "Hough images"
 [image7]: ./readme_assets/annotated_images.png "Annotated images"
 [image8]: ./readme_assets/process.png "Process"
-[image9]: ./readme_assets/test_video_1_annotated.gif.png "Video"
+[image9]: ./readme_assets/test_video_1_annotated.gif "Video"
 
 
 ### Files and project navigation 
