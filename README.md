@@ -1,7 +1,7 @@
 ## Lane finding project
 
 ### Introduction 
-In order to navigate a self-driving car, one of core skills is detecting lane markings and extrapolating full lane lines. In this project, I'm  starting with test images and test videos that come from a front-facing car camera, and I'm showing a simple way to output predicted lane lines. 
+In order to navigate a self-driving car, one of the core skills is detecting lane markings and extrapolating full lane lines. In this project, I'm  starting with test images and test videos that come from a front-facing car camera, and I'm showing a simple way to output predicted lane lines. 
 
 The steps I'll be describing are: 
 * Applying Gaussian blur and grayscale transformations to remove the effects of noise and remove unnecessary colors.

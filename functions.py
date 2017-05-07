@@ -97,11 +97,6 @@ def hough_lines_advanced(img, rho, theta, threshold, min_line_len, max_line_gap,
 
     return line_img
 
-
-
-
-
-
 def weighted_img(img, initial_img, a=0.8, b=1., c=0.):
 	#img is output of hough lines
 	#initial_img  is img before any processing
