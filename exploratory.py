@@ -44,7 +44,7 @@ def plot_all(images):
 	plt.show()
 	#plt.savefig('image.png', bbox_inches='tight', cmap='gray')
 
-#plot_all(annotated_images_2)
+plot_all(annotated_images_2)
 
 #PLOT TRANSFORMATIONS
 def plot_progress(progress, test_image_number):
